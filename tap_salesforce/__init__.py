@@ -322,6 +322,7 @@ async def sync_catalog_entry(sf, catalog_entry, state):
         stream_alias)
 
     loop = asyncio.get_event_loop()
+    LOGGER.info("###sync_catalog_entry loop:", loop)
 
     job_id = singer.get_bookmark(state, catalog_entry['tap_stream_id'], 'JobID')
     if job_id:
@@ -362,6 +363,7 @@ def do_sync(sf, catalog, state):
     max_workers = CONFIG.get('max_workers', 8)
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=max_workers)
     loop = asyncio.get_event_loop()
+    LOGGER.info("###do_sync loop:", loop)
     loop.set_default_executor(executor)
 
     try:
@@ -372,6 +374,7 @@ def do_sync(sf, catalog, state):
         sync_tasks = (sync_catalog_entry(sf, catalog_entry, state)
                       for catalog_entry in streams_to_sync)
         tasks = asyncio.gather(*sync_tasks)
+        LOGGER.info("###do_sync tasks:", tasks)
         loop.run_until_complete(tasks)
     finally:
         loop.run_until_complete(loop.shutdown_asyncgens())
