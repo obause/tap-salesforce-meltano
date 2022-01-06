@@ -378,8 +378,8 @@ def do_sync(sf, catalog, state):
         loop.run_until_complete(tasks)
     finally:
         loop.run_until_complete(loop.shutdown_asyncgens())
-        LOGGER.info("###loop.close() aufgerufen")
-        loop.close()
+        LOGGER.info("###loop.close() nicht aufgerufen")
+        #loop.close()
 
     singer.write_state(state)
     LOGGER.info("Finished sync")
