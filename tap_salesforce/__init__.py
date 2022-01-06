@@ -321,7 +321,7 @@ async def sync_catalog_entry(sf, catalog_entry, state):
         replication_key,
         stream_alias)
 
-    loop = asyncio.get_event_loop().run_until_complete()
+    loop = asyncio.get_event_loop()
     LOGGER.info("###sync_catalog_entry loop: %s", str(loop))
 
     job_id = singer.get_bookmark(state, catalog_entry['tap_stream_id'], 'JobID')
@@ -362,7 +362,7 @@ def do_sync(sf, catalog, state):
 
     max_workers = CONFIG.get('max_workers', 8)
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=max_workers)
-    loop = asyncio.get_event_loop().run_until_complete()
+    loop = asyncio.get_event_loop()
     LOGGER.info("###do_sync loop: %s", str(loop))
     loop.set_default_executor(executor)
 
@@ -378,6 +378,7 @@ def do_sync(sf, catalog, state):
         loop.run_until_complete(tasks)
     finally:
         loop.run_until_complete(loop.shutdown_asyncgens())
+        LOGGER.info("###loop.close() aufgerufen")
         loop.close()
 
     singer.write_state(state)
